@@ -24,3 +24,27 @@
 - How a test case with a `source_url` makes a formula defensible.
 - How CI catches a math error before the code reaches a user.
 - How the QuantOS release discipline works (the six version sites, the ADR rule, the `release.sh` gate).
+
+## Before your first PR: the fresh clone
+
+Before you open your first PR, clone the repo in a new directory and run the seven checks:
+
+    cd /tmp
+    git clone https://github.com/slimissa/fin-conventions.git fresh-check
+    cd fresh-check
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements-dev.txt
+    pytest tests/ -q
+    python3 tools/validate.py
+    python3 tools/check_version_consistency.py
+    python3 tools/check_mojibake.py
+    python3 cli.py get ACT/360 --start 2026-01-01 --end 2026-01-31
+    python3 tools/check_cli_coverage.py
+    python3 tools/check_wrapper_coverage.py
+
+All seven should pass. If they do, your clone is green and your PR starts from a known state.
+
+**Why the fresh clone matters.** The CI checks what the CI is configured to check. The fresh clone checks what the CI is not configured to check. The seed's own `tools/check_wrapper_coverage.py` was caught by a fresh clone, not by the CI, because the CI's `check-wrappers` job did not call the helper until a fresh clone reported its absence. Your first PR should be checked by both: the CI on every push, and a fresh clone on Day 1.
+
+The fresh clone is not a redundancy. It is a second opinion.
