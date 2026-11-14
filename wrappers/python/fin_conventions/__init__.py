@@ -9,7 +9,7 @@ from pathlib import Path
 import json
 from typing import Optional
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 _REGISTRY_PATH = Path(__file__).resolve().parents[3] / "fin-conventions.json"
 
