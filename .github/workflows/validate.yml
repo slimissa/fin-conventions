@@ -42,10 +42,29 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: |
+      - name: CLI regression test (ACT/360 must return 30)
+        run: |
           out=$(python3 cli.py get ACT/360 --start 2026-01-01 --end 2026-01-31)
           echo "cli output: $out"
           test "$out" = "30"
+      - name: CLI coverage test (every fixture convention must be listed and calculable)
+        run: |
+          fixture_ids=$(python3 -c "import json; print(' '.join(c['convention_id'] for c in json.load(open('tests/fixtures/conventions.test.json'))['conventions']))")
+          cli_ids=$(python3 cli.py list)
+          for id in $fixture_ids; do
+            if ! echo "$cli_ids" | grep -qx "$id"; then
+              echo "ERROR: $id is in the fixture but not in the CLI's list output"
+              exit 1
+            fi
+          done
+          for id in $fixture_ids; do
+            expected=$(python3 -c "import json; c=[x for x in json.load(open('tests/fixtures/conventions.test.json'))['conventions'] if x['convention_id']=='$id'][0]['math_test_case']['expected']")
+            actual=$(python3 cli.py get "$id" --start 2026-01-01 --end 2026-01-31)
+            if [ "$actual" != "$expected" ]; then
+              echo "ERROR: cli.py get $id returned $actual, expected $expected"
+              exit 1
+            fi
+          done
 
   check-wrappers:
     runs-on: ubuntu-latest
@@ -55,7 +74,6 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: pip install -e wrappers/python
       - run: python3 -c "from fin_conventions import Convention; print(Convention.get('ACT/360').name)"
 
   check-math-oracle:
