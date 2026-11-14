@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://quantos.dev/schemas/fin-conventions/v0.1.0.json",
+  "title": "fin-conventions",
+  "type": "object",
+  "required": ["meta", "day_counts", "business_days", "rolls", "frequencies"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["version", "updated", "schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "version":     { "type": "string" },
+        "updated":     { "type": "string", "format": "date" },
+        "schema_version": { "type": "string" }
+      }
+    },
+    "day_counts":    { "type": "array", "items": { "$ref": "#/definitions/convention" } },
+    "business_days": { "type": "array", "items": { "$ref": "#/definitions/convention" } },
+    "rolls":         { "type": "array", "items": { "$ref": "#/definitions/convention" } },
+    "frequencies":   { "type": "array", "items": { "$ref": "#/definitions/convention" } }
+  },
+  "definitions": {
+    "convention": {
+      "type": "object",
+      "required": ["convention_id", "name", "description", "formula", "source_url", "math_test_case"],
+      "additionalProperties": false,
+      "properties": {
+        "convention_id": { "type": "string", "pattern": "^[A-Z0-9/]+$" },
+        "name":          { "type": "string" },
+        "description":   { "type": "string" },
+        "formula":       { "type": "string" },
+        "source_url":    { "type": "string", "format": "uri" },
+        "math_test_case": { "$ref": "#/definitions/math_test_case" }
+      }
+    },
+    "math_test_case": {
+      "type": "object",
+      "required": ["start", "end", "expected", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "start":       { "type": "string", "format": "date" },
+        "end":         { "type": "string", "format": "date" },
+        "expected":    { "type": "number" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

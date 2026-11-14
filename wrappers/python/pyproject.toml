@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fin-conventions"
+version = "0.0.1"
+description = "The 7th QuantOS registry: financial conventions, mathematically provable."
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fin_conventions*"]

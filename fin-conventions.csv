@@ -1,0 +1,2 @@
+convention_id,type,name,description,formula,source_url
+ACT/360,day_count,Actual/360,Actual days in the period divided by a 360-day year.,actual_days / 360,https://www.isda.org/a/FmwDE/ISDA-2006-Definitions.pdf

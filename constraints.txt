@@ -1,0 +1,2 @@
+# Pin the tools whose output is byte-compared in CI.
+pytest==8.3.3

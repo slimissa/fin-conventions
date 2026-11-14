@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "version": "0.0.1",
+    "updated": "2026-01-01",
+    "schema_version": "0.1.0"
+  },
+  "day_counts": [
+    {
+      "convention_id": "ACT/360",
+      "name": "Actual/360",
+      "description": "Actual days in the period divided by a 360-day year.",
+      "formula": "actual_days / 360",
+      "source_url": "https://www.isda.org/a/FmwDE/ISDA-2006-Definitions.pdf",
+      "math_test_case": {
+        "start": "2026-01-01",
+        "end": "2026-01-31",
+        "expected": 30,
+        "description": "30 actual days. 30 / 360 = 0.0833..."
+      }
+    }
+  ],
+  "business_days": [],
+  "rolls": [],
+  "frequencies": []
+}

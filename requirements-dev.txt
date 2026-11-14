@@ -1,0 +1,5 @@
+-c constraints.txt
+pytest==8.3.3
+pytest-cov==5.0.0
+hypothesis==6.112.0
+ruff==0.6.9
