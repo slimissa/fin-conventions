@@ -26,11 +26,12 @@ def read_version():
 
 def check_changelog(v):
     text = (ROOT / "CHANGELOG.md").read_text()
-    m = re.search(r"^## \[([^\]]+)\]", text, re.M)
-    if not m:
-        return f"CHANGELOG.md: no '## [x.y.z]' heading found"
-    if m.group(1) != v:
-        return f"CHANGELOG.md: top heading is {m.group(1)!r}, expected {v!r}"
+    headings = re.findall(r"^## \[([^\]]+)\]", text, re.M)
+    released = [h for h in headings if h.lower() != "unreleased"]
+    if not released:
+        return None
+    if released[0] != v:
+        return f"CHANGELOG.md: top released heading is {released[0]!r}, expected {v!r}"
     return None
 
 

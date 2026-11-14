@@ -61,5 +61,5 @@ def calculate(convention_id: str, start: str, end: str, calendar: Optional[list]
         from datetime import date
         d1 = date.fromisoformat(start)
         d2 = date.fromisoformat(end)
-        return (d2 - d1).days / 360
+        return (d2 - d1).days
     raise NotImplementedError(f"calculate() not implemented for {convention_id}")
