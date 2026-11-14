@@ -58,6 +58,8 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
       - run: python3 -c "from fin_conventions import Convention; print(Convention.get('ACT/360').name)"
+      - name: Wrapper coverage test (every fixture convention must be calculable)
+        run: python3 tools/check_wrapper_coverage.py
 
   check-math-oracle:
     runs-on: ubuntu-latest
