@@ -9,17 +9,14 @@
 # Refuses on:
 #   dirty tree / wrong branch / CHANGELOG section missing
 #   HEAD different from a freshly fetched origin/main
-#   VERSION already equal to the target
 #   version sites not in agreement AFTER regeneration
 #   failing gate (validate, mojibake, pytest, exports)
 #   gh missing (CI could not be polled)
 #
-# Shape: preconditions -> version sites -> regenerate -> gate ->
-# commit -> CI -> tag -> verification doc.
-#
-# fin-conventions is smaller than ISO 10383: one wrapper, no Parquet,
-# no snapshots, no cross-registry, no manifest. The gate reflects
-# that. Do not port checks that reference files that do not exist.
+# In --dry-run, the version-sites precondition (`VERSION == $VERSION`) is
+# not enforced, because the dry-run's job is to exercise the release
+# steps against a tree that has NOT been bumped. The dry-run prints the
+# version-sites changes as [dry-run] lines and continues.
 
 set -euo pipefail
 
@@ -107,12 +104,16 @@ echo "  preconditions OK"
 step "Version sites"
 
 CURRENT="$(cat VERSION)"
-if [[ "$CURRENT" == "$VERSION" ]]; then
-    echo "FAIL: VERSION is already $VERSION" >&2
-    exit 1
-fi
 
-echo "  $CURRENT -> $VERSION"
+if [[ "$CURRENT" == "$VERSION" ]]; then
+    if [[ "$DRY_RUN" != "--dry-run" ]]; then
+        echo "FAIL: VERSION is already $VERSION" >&2
+        exit 1
+    fi
+    echo "  VERSION is already $VERSION (dry-run, continuing)"
+else
+    echo "  $CURRENT -> $VERSION"
+fi
 
 if [[ "$DRY_RUN" != "--dry-run" ]]; then
     echo "$VERSION" > VERSION
@@ -122,26 +123,22 @@ import json, re
 from pathlib import Path
 v = "$VERSION"
 
-# fin-conventions.json -> meta.version
 p = Path("fin-conventions.json")
 d = json.loads(p.read_text(encoding="utf-8"))
 d["meta"]["version"] = v
 p.write_text(json.dumps(d, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
              encoding="utf-8")
 
-# wrappers/python/pyproject.toml
 p = Path("wrappers/python/pyproject.toml")
 p.write_text(re.sub(r'^version\s*=\s*"[^"]+"', f'version = "{v}"',
                     p.read_text(encoding="utf-8"), count=1, flags=re.M),
              encoding="utf-8")
 
-# wrappers/python/fin_conventions/__init__.py -> __version__
 p = Path("wrappers/python/fin_conventions/__init__.py")
 p.write_text(re.sub(r'^__version__\s*=\s*"[^"]+"', f'__version__ = "{v}"',
                     p.read_text(encoding="utf-8"), count=1, flags=re.M),
              encoding="utf-8")
 
-# README.md -> registry badge (if present)
 p = Path("README.md")
 text = p.read_text(encoding="utf-8")
 text = re.sub(r'badge/registry-[0-9]+\.[0-9]+\.[0-9]+-',
@@ -289,7 +286,7 @@ if [[ "$DRY_RUN" != "--dry-run" ]]; then
         echo
         echo "## Gates"
         echo
-        echo "Exit codes, in the order the gates ran. A gate that failed would have stopped the release before this file was written."
+        echo "Exit codes, in the order the gates ran."
         echo
         for g in "${GATE_LOG[@]}"; do
             echo "- \`${g#*|}\` — exit ${g%%|*}"
