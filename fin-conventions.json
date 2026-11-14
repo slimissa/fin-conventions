@@ -13,6 +13,19 @@
       },
       "name": "Actual/360",
       "source_url": "https://www.isda.org/a/FmwDE/ISDA-2006-Definitions.pdf"
+    },
+    {
+      "convention_id": "ACT/365",
+      "description": "Actual days in the period divided by a 360-day year.",
+      "formula": "actual_days / 365",
+      "math_test_case": {
+        "start": "2026-01-01",
+        "end": "2026-01-31",
+        "expected": 30,
+        "description": "30 actual days."
+      },
+      "name": "Actual/365",
+      "source_url": "https://www.isda.org/a/FmwDE/ISDA-2006-Definitions.pdf"
     }
   ],
   "frequencies": [],
